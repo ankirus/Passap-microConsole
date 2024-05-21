@@ -1,0 +1,40 @@
+h:	.	list of microConsole commands ##
+
+A:	.	usage: select pattern 'A', set active, clear A
+B:	.	usage: select pattern 'B', set active, clear B
+C:	.	usage: select pattern 'C', set active, clear C
+
+ddxxxx ... xx: 	usage: data: dd- number of current row in 
+			decimal, xx - hex string
+
+a:	.	usage: select pattern 'A', print all data 
+			string of 'A' in hex, 
+b:	.	usage: select pattern 'A', print all data 
+			string of 'A' in hex
+c:	.	usage: select pattern 'A', print all data 
+			string of 'A' in hex
+
+&&sddd:	.	usage: &&: letters (a-z) (= commands),
+			sddd: command parameter,
+			s: "-" or digit, d: digit (0-9) or "blank",
+			no less then one digit
+
+u:	.	usage: load image to microConsole (Python only##)
+t:	.	usage: TEST, immitation of knitting machine
+			output row number 0 of selected pattern 
+			to PC CLI terminal and to buils in LED (blinks)
+			
+k:	. 	usage: set knit mode  #
+p:	. 	usage: set pattern_upload mode  #
+r*xddd	. 	usage: set right knit sumple margin  #
+l*xddd	. 	usage: set left knit sumple margin  #
+n*xddd	. 	usage: set next row in knit mode  #
+x: 	.	usace: exit Python PyPaMiCo GUI (Python only##)
+
+
+* - 	any ASCII symbol;
+# - 	for future release;
+## - 	Python only - work properly only with Python PyPaMiCo interface,
+	CLI only - work properly only by command line interface.
+		
+		
