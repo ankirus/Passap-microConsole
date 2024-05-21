@@ -1,4 +1,15 @@
 
-Passap-microConsole.bin was originally created by CUBE MX version 5.0.0, programmed in CUBE IDE version 15 and compiled by the GNU ARM v132 compiler.
-Hardware: Bluepill with STM32F103CB chip.
-The CUBE MX source file is quite simple and is included with the project, so there should be no problem playing this project on any other suitable platforms.
+Passap-microConsole.bin was initially created by CUBE MX version 5.0.0, 
+programmed in CUBE IDE version 15 and compiled by the GNU ARM v132 compiler.
+Hardware: "Bluepill" with STM32F103CB chip.
+The CUBE MX source file is quite simple and is included with the project, 
+so there should be no problem playing this project on any other suitable platforms.
+
+To check PaMiCo, it is enough to have any computer with USB,
+64K "Bluepill" (and/or STLink programmer or RS232 serial port on PC plus USB-TTL converter,
+in case Bluepill does not have a bootloader). It is also necessary to have
+a terminal program installed on the computer to use the CLI 
+(command line interface) and installed Python 3 to use the PyPaMiCo GUI.
+
+The current first initial version of PaMiCo is created for testing purposes only and 
+does not involve the use of a real knitting machine at this stage of work.
