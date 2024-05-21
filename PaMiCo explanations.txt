@@ -1,0 +1,4 @@
+
+Passap-microConsole.bin was originally created by CUBE MX version 5.0.0, programmed in CUBE IDE version 15 and compiled by the GNU ARM v132 compiler.
+Hardware: Bluepill with STM32F103CB chip.
+The CUBE MX source file is quite simple and is included with the project, so there should be no problem playing this project on any other suitable platforms.
