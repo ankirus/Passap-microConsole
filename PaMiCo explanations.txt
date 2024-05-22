@@ -1,18 +1,18 @@
 
-Passap-microConsole PaMiCo was initially created by CUBE MX version 5.0.0, 
-programmed in CUBE IDE version 15 and compiled by the GNU ARM v132 compiler.
+Passap-microConsole PaMiCo was programmed in CUBE IDE 
+with the GNU ARM v132 compiler.
 
-Hardware: "Bluepill" with STM32F103CB chip.
-Compiled Passap-microConsole.bin is included.
+Hardware: "Blue pill" with STM32F103C8 chip.
+The compiled file Passap-microConsole.bin is located in the debug folder.
 
-The CUBE MX source file is quite simple and is included with the project, 
-so there should be no problem playing this project on any other suitable platforms.
+Passap-micro Console connects to the Windows OS computer via USB. 
+The driver must be installed: "STM32 Virtual COM Port Driver".
 
-To check PaMiCo, it is enough to have any computer with USB,
-64K "Bluepill" (and/or STLink programmer or RS232 serial port on PC plus USB-TTL converter,
-in case Bluepill does not have a bootloader). It is also necessary to have
-a terminal program installed on the computer to use the CLI 
-(command line interface) and installed Python 3 to use the PyPaMiCo GUI.
+It is also necessary to have on computer
+- a terminal program installed on the computer to use the CLI 
+(command line interface) to conrol knitting machine's "selector support";
+- Python 3 to use the PyPaMiCo GUI to make anf load knit pattern form jpg pictures.
 
 The current first initial version of PaMiCo is created for testing purposes only and 
-does not involve the use of a real knitting machine at this stage of work.
+does not involve the use of a real knitting machine at this stage of work. 
+The output signal is output to the Bluepill's built-in LED and to terminal screen.
