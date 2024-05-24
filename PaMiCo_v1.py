@@ -1,21 +1,23 @@
 
 """
 
-            This program is part of the Passap-MicroConsole project.
-           (Passap is a brand of knitting machines.)
-           This is a Python program for loading knitting patterns into PaMiCo - "Passap-MicroConsole".
-           PaMiCo is a microcontroller board based device programmed using
-           CUBE IDE and can perform some of the functions of the original Passap console.
+                        This program is part of the Passap-MicroConsole project.
+               It is intended for loading knitting patterns into PaMiCo - "Passap-MicroConsole".
+               PaMiCo is a device based on a microcontroller board that is capable of performing the main
+               functions of the original Passap console: storing knitting patterns in the device’s memory
+               and reproducing them on knitted fabric.
+               With PaMiKo you can get rid of a bulky console with a keyboard that always gets stuck,
+               and by placing a tiny microcontroller board directly on the knitting lock,
+               you can also get rid of the inconvenient curve cord.
 
-            Forked from IrenePassap/Passap-E6000-hacked-and-rebuilt
-            (https://github.com/IrenePassap/Passap-E6000-hacked-and-rebuilt)
+                This Python program is a fork of "IrenePassap/Passap-E6000-Hacked and Rebuilt".
+              (https://github.com/IrenePassap/Passap-E6000-hacked-and-rebuilt) and ported
+               from Rapsberry to a regular PC.
  """
 
 import time
 import serial
 import cv2
-# import bitarray
-# from bitstring import BitArray
 from PIL import Image
 from tkinter import filedialog
 import numpy as np
@@ -45,7 +47,6 @@ pattern_0 = [0b0 * 23]
 patternString = b'0'
 
 
-# -------------------------------
 def read_lines(ser):
 
     buffer = ser.read(300)
@@ -54,12 +55,7 @@ def read_lines(ser):
     buffer = ser.read(300)
     time.sleep(0.05)
     print(buffer)
-    # buffer = readline(ser)
-    # print(buffer)
     return buffer
-
-
-
 
 def convertIntToStrSize2(numRow):
     # j = numRow  # pattern row for download
@@ -71,78 +67,70 @@ def convertIntToStrSize2(numRow):
 
 
 def receiving():
-    received = read_lines(ser)
+    received1 = read_lines(ser)
     time.sleep(0.1)
-    # print("dataFromConsole=", received, )
-    print("dataFromConsole=", received.decode("utf-8"), " ! ")
-    strReceived = str(received)
+
+    strReceived = str(received1)
 
     time.sleep(0.1)
     findErr = strReceived.find("Err")
     print()
     if findErr != -1:
         err = (strReceived[(findErr + 3):(findErr + 5)])
+        print(" findErr  = ", findErr, " Err  = ", err, " ")
     else:
         err = 0
-    print(" findErr  = ", findErr, " Err  = ", err, " ")
+
     time.sleep(0.1)
 
 
 def begin2(widthMyPatternInBytes, heightMy_, widthMy_):
-    print(" l113_def_begin2(widthMyPatternInBytes)=", widthMyPatternInBytes, " ")
+
     numRow = 0
-    # print(" NumRow  = ", numRow, ' ', " strNumRow  = ", strNumRow, ' ')
     strNumRow = convertIntToStrSize2(numRow)
-    print(" NumRow  = ", numRow, ' ', " strNumRow  = ", strNumRow, ' ')
-    print(" knitpatByte_black_VNB=", knitpatByte_black_VNB)
-    print(" heightMy_=", heightMy_)
 
     for j in range(heightMy_):
 
-        #  print(" knitpatByte_black_VNB[j]=", knitpatByte_black_VNB[j])
         ccx = ''.join('{:02X}'.format(a) for a in knitpatByte_black_VNB[j])
 
         jToBytesStr = (convertIntToStrSize2(j))
         # print(" jToBytesStr= ", jToBytesStr)
         newString = bytes(jToBytesStr, "ascii") + bytes(ccx, "ascii")
         # newString = bytes(ccx, "ascii")
-        print(" Row ", j, ", is loading:  ")
-        print("newString=", newString)
+        print(" Row ", j, ", data to load: ", newString )
+        print()
         ser.write(newString)
         time.sleep(0.01)
         print(" data were loaded: ")
         receiving()
 
+    global gray_
 
-# ------------------------------------
-
-# Array for knit pattern
 
 def opcv_(file_name_pat_VNB_):
-    print("  ")
-    print(' im = cv2.imread(file_name_pat_VNB_)')
+
     im = cv2.imread(file_name_pat_VNB_)
     a = np.asarray(im)
     type(a)
     sh = a.shape
     print("The shape of pattern for upload to console: ", sh)
-    b, g, r = cv2.split(a)
+
+    b_, g_, r_ = cv2.split(a)
     print("  ")
     print("--blue--")
-    print(b)
+    print(b_)
     print("--green--")
-    print(g)
+    print(g_)
     print("--red--")
-    print(r)
+    print(r_)
     print("  ")
+    gray_ = (b_ + g_ + r_)/3
 
 
 def get_pattern(data):
-    #  print(" def get_pattern(data): ")
+
     file_name_pat_VNB_ = filedialog.askopenfilename()
-    #  print(" - file_name_pat_VNB= ", file_name_pat_VNB_)
     filename = Image.open(file_name_pat_VNB_)
-    # filename = Image.open(data)
 
     opcv_(file_name_pat_VNB_)
 
@@ -172,12 +160,8 @@ def get_pattern(data):
                 row_black.append(1)
                 row_white.append(0)
 
-        #  print(" 204 row_black = ", row_black)
         listMy_black.append(row_black)
         listMy_white.append(row_white)
-
-    #  print(" listMy_black = ", listMy_black)
-    #  print(" listMy_white = ", listMy_white)
 
     knitpatByte_black = []
     knitpatByte_white = []
@@ -187,169 +171,43 @@ def get_pattern(data):
     else:
         widthMyPatternInBytes_1 = widthMy // 8 + 1
 
-    print(" l215_widthMyPatternInBytes_1 = ", widthMyPatternInBytes_1)
-    print(" heightMy = ", heightMy)
+
+
     for i in range(0, heightMy):
         (pattern_black, widthMyPatternInBytes_1) = pattern_Array(listMy_black, i, widthMyPatternInBytes_1)
-        print(" 204 (row) pattern_black = ", pattern_black)
         knitpatByte_black.append(pattern_black)
-        print(" 206 knitpatByte_black = ", knitpatByte_black)
 
     for i in range(0, widthMyPatternInBytes_1):
         (pattern_white) = pattern_Array(listMy_white, i, widthMyPatternInBytes_1)
         knitpatByte_white.append(pattern_white)
 
-    print(" 212 knitpatByte_black", knitpatByte_black)
     n = 0
 
     return knitpatByte_black, knitpatByte_white, widthMyPatternInBytes_1, heightMy, widthMy
 
-def pattern_Array(listMy, data, widthMyPatternInBytes):  #data - num row
-    #  print(' def pattern_Array(listMy, data) ')
-    print(" width My Pattern In Pixels=  ", widthMyPatternInPixels)
-    print(" width My Pattern In Bytes=  ", widthMyPatternInBytes)
 
-    if ((widthMyPatternInBytes*8) != widthMyPatternInPixels):
+def pattern_Array(listMy, data, widthMyPatternInBytes_):  # data - num row
+
+    if widthMyPatternInBytes_*8 != widthMyPatternInPixels:
         print(" Error: The width of the ornament pattern must be a multiple of 8 ")
         time.sleep(1.5)
         wait = input("Press Enter to continue.")
         time.sleep(2.5)
-        # exit()
-
-    #  print("listMy= ",listMy)
-    #  print(' - data= ', data, )
-    pattern_data = listMy[data]
-    #  print(" l244_pattern_data = ", pattern_data)
 
     n = 0
-    m = 0
 
-    pattern = [0b0] * widthMyPatternInBytes
-    print(" pattern =  ", pattern)
-    print(' data= ', data, " ")
+    pattern = [0b0] * widthMyPatternInBytes_  # hexadecimal string to transmit to console
 
-
-    '''
-    while m < widthMyPatternInBytes:
-        while m < widthMyPatternInBytes:
-
-            for y in range(0, 8):
-                # val = pattern_data[n]  # = listMy[data]
-                val = pattern_data[y]  # = listMy[data]
-
-                n += 1
-                if val == 0:
-                    pattern[m] = pattern[m].__lshift__(1)
-                else:
-                    pattern[m] = pattern[m].__lshift__(1)
-                    pattern[m] |= 1
-                print( "n =  ", n, " y = ", y, "val = ", val,"m=", m, ", pattern[m] = ", pattern[m])
-
-            print(" _m=", m, ", pattern[m] = ", pattern[m])
-            m += 1
-    '''
-
-    for w in range(0, widthMyPatternInBytes):  # convert to bytes
-        print("  w1=", w)
-        for y in range(0, 8):
-            n = (w*8) + y
-            val = pattern_data[n]
-            print("  w1=", w, " y1=", y, " n=", n," val=", val, " pattern[w] = ", pattern[w])
-            pattern[w] = pattern[w] | val
-            print(" pattern[w] = ", pattern[w])
-            if y < 7 :
-                pattern[w] = pattern[w] << 1
-        print("  w=", w, ", pattern[w] = ", pattern[w])
-
-    print(" 251_pattern_data = ", pattern_data)
-    print(" 252_pattern = ", pattern)
-    return pattern, widthMyPatternInBytes
+    for numByteinRow in range(0, widthMyPatternInBytes_):
+        for numBit in range(0, 8):
+            n = (numByteinRow * 8) + numBit
+            pattern[numByteinRow] = (pattern[numByteinRow] << 1) | listMy[data][n]
+    return pattern, widthMyPatternInBytes_
 
 
-def begin1():
-    file_name_pat_VNB = filedialog.askopenfilename()
-
-    print(file_name_pat_VNB, ' - file_name_pat_VNB')
-    img = Image.open(file_name_pat_VNB)
-    # pixel_ = img.getpixel((2, 3))
-    # print(pixel_, ' - pixel')
-    widthMy = img.size[0]
-    widthMyPatternInPixels = widthMy
-    heightMy = img.size[1]
-    print(widthMy, " widthMy"), print(heightMy, " heightMy")
-
-    # print('len.ba1', ba1.__len__())
-    # print("array_new23 ", array_new23)
-    im = cv2.imread(file_name_pat_VNB)
-    aaa = np.asarray(im)
-    # type(aaa)
-    # print("aaa = ", aaa , ' -> aaa')
-    sh = aaa.shape
-    print("The shape of aaa numpy array is: ", sh)
-    # for i in range(len(a)):
-    #     print(a)
-    List_a = np.ndarray.tolist(aaa)
-    # print(" List_a = np.ndarray.tolist(aaa) ")
-    # print(" List_a = " , List_a, " -  List_a")
-
-    b, g, r = cv2.split(aaa)
-    # print("b, g, r = cv2.split(aaa)")
-    # print( "b = " , b)
-
-    w, h = widthMy, heightMy
-    bb_arr = [[0 for x in range(w)] for y in range(h)]
-    print(bb_arr, "*----bb_arr---только создан ")
-    # print("*'''''''''''''''''''''''''''''''''''''''----bb_arr---''''''''''''''''''''''''''''''''''''''' ")
-    bb_arr_bool = bb_arr
-    print( bb_arr_bool ,' - bb_arr_bool ')
-    for i in range(h):
-        for j in range(w):
-            tmp = (b[i][j])
-            if tmp <= 100:
-                (bb_arr_bool[i][j]) = 0
-            else:
-                (bb_arr_bool[i][j]) = 1
-    # print( bb_arr_bool, "----bb_arr---:")
-    global bb_string
-    global bb_list_bool
-    bb_string = np.array2string(b, separator=" ")
-    print(bb_string, '  -bb_string = np.array2string(b, separator=" ")- ')
-    print("----bb_string----")
-    print("***********************************************************************")
-    bb_list = b.tolist()
-    print("--bb_list-- = b.tolist() ")
-    print(" bb_list = ", bb_list, " bb_list = b.tolist() ")
-
-    bb_list_bool = bb_list
-    for i in range(len(bb_list)):
-        for j in range(len(bb_list[i])):
-            tmp = (bb_list[i][j])
-            if tmp <= 100:
-                (bb_list_bool[i][j]) = 0
-            else:
-                (bb_list_bool[i][j]) = 1
-
-    print(bb_list_bool, ' --(bb_list_bool)-- '), print("*----bb_list---bool -end")
-
-    my_array = np.array(bb_list)
-    print(" my_array = np.array(bb_list) ")
-    print("my_array = " , my_array)
-    value = tuple(b)
-    print(' - value = tuple(b)')
-    print(value, ' - value = tuple(List_a)')
-    list_my_arr = my_array.tolist()
-    print("list_my_arr = my_array.tolist()")
-    print("list my arr = " , list_my_arr , " -> list my arr")
-    print(type(list_my_arr)) # <class 'list'>
-    # converting list to string using list comprehension
-
-
-def begin():
-    print(" begin() ")
+def begin(self=None):
     global quitButton
     global filenamePattern
-    # global heightMy
-    # global widthMy
     global img
     global im
     global knitpatByte_black_VNB
@@ -363,39 +221,11 @@ def begin():
 
     try:
         (knitpatByte_black_VNB, knitpatByte_white_VNB, widthMyPatternInBytes, heightMy, widthMy) = get_pattern(file_name_pat_VNB)
-
         height_VNB = len(knitpatByte_black_VNB)
-
-        print(" 323 height_VNB = ", height_VNB)
-        print("  knitpatByte_black_VNB = ", knitpatByte_black_VNB)
-        print("  l372_widthMyPatternInBytes = ", widthMyPatternInBytes)
-        print(" heightMy = ", heightMy)
-        print(" widthMy = ", widthMy)
     except IOError:
         self.errorDialog("!no knitpatBytetern VNB")
 
-    """
-    # num = 
-
-
-    print(" 295 knitpatByte_white_VNB")
-    print(knitpatByte_white_VNB)  # printing the value
-    print(" 297 knitpatByte_black_VNB")
-    print(" 0," , knitpatByte_black_VNB[0])
-
-    print(" 300 bytes(knitpatByte_black_VNB[0]) =  ")
-    print(bytes(knitpatByte_black_VNB[0]))
-    """
-
-    # ser.write(bytes(knitpatByte_black_VNB[0]))
-    # line = ser.readline()
-    # received.append(line.decode().strip())
-    print("datetime.datetime.now() - start)=")
-    print(datetime.datetime.now() - start)
-
     begin2(widthMyPatternInBytes, heightMy, widthMy)
-
-# -------------------------------------
 
 class Window(QWidget):
 
@@ -469,17 +299,9 @@ class Window(QWidget):
         self.label.setText(str(n))
         char1 = n
         print(n)
-        # newString = bytes(chr(n), "ascii")  + bytes("fgh", "ascii")
         newString = bytes(chr(n), "ascii") + bytes(chr(n), "ascii") + bytes("+", "ascii")
         ser.write(newString)
         time.sleep(0.01)
-        # print(" recived=")
-
-        '''        
-        received = read_lines(ser)
-        time.sleep(0.01)
-        print("dataFromConsole=", received, " ! ")
-        strReceived = str(received)'''
 
         receiving()
 
@@ -491,9 +313,6 @@ while 1 == 1:
     w = Window()
     w.show()
     app.exec()
-
-# ----------------------------
-
 
 
 if __name__ == '__main__':
